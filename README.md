@@ -56,7 +56,7 @@ Añadir la cohorte a COHORTES y sus indicadores a RESULTADOS vinculados por ID. 
 - api/dashboard.ts: integración de solo lectura.
 - tests/data.test.ts: reglas de publicación, vacíos, unidades, totales y API sin configuración.
 - public/data/snapshot.json: copia de consulta local, fechada y excluida de Git.
-- public/images/logo-meb.png: ubicación esperada del logo oficial, todavía no recibido.
+- public/images/logo-meb.png: logo oficial provisto por el área, visible en escritorio y móvil.
 
 Las rutas #/acompanamiento, #/ensenar, #/taller y #/liga evitan rewrites que intercepten /api. El detalle se selecciona dentro de la línea y se reinicia al cambiar año o sección. No se incluye React Router porque la navegación actual no lo necesita.
 
@@ -66,7 +66,7 @@ Las rutas #/acompanamiento, #/ensenar, #/taller y #/liga evitan rewrites que int
 npm run check
 ```
 
-Ejecuta Oxlint, pruebas con node:test y comprobación TypeScript tanto del cliente como del servidor, además del build. `npm run preview` permite inspeccionar el build estático. El logo faltante se resuelve mostrando el nombre del área; no se inventó una marca alternativa.
+Ejecuta Oxlint, pruebas con node:test y comprobación TypeScript tanto del cliente como del servidor, además del build. `npm run preview` permite inspeccionar el build estático. El componente Brand muestra el logo oficial sin recortarlo ni deformarlo. La paleta se centraliza en las variables --brand-* de src/index.css: magenta #E12277, turquesa #03ABC1 y azul #3A5175, muestreados de la imagen, con variantes oscuras para textos y controles accesibles.
 
 La configuración y arquitectura siguen las referencias oficiales:
 - https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/batchGet
@@ -75,4 +75,5 @@ La configuración y arquitectura siguen las referencias oficiales:
 ## Próxima iteración
 
 Comparativas entre cohortes y regiones, evolución temporal, exportación de tablas y enlaces directos a cada cohorte. Revisar indicadores parciales con el equipo antes de introducir totales adicionales.
+
 

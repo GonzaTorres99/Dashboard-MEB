@@ -3,6 +3,7 @@ import { LayoutDashboard, School, BookOpen, Radio, Mic, Menu, X, RefreshCw, Exte
 import { lines, type Dataset } from '../shared/model'
 import { fetchData } from './services/data'
 import { Dashboard } from './pages/Dashboard'
+import { Brand } from './components/Brand'
 
 const icons = [School, BookOpen, Radio, Mic]
 export default function App() {
@@ -12,7 +13,6 @@ export default function App() {
   const [route,setRoute] = useState(location.hash.slice(2))
   const [year,setYear] = useState('')
   const [menu,setMenu] = useState(false)
-  const [logo,setLogo] = useState(true)
   const line = lines.find(l=>l.id===route)
   const validRoute = !route || Boolean(line)
   async function load(snapshot=false) {
@@ -28,9 +28,9 @@ export default function App() {
   const years = [...new Set(data?.cohorts.filter(c=>!line || c.line===line.id).map(c=>c.year).filter(Boolean))].sort().reverse()
   return <div className="app-shell">
     <a className="skip-link" href="#main" onClick={e=>{e.preventDefault();document.getElementById("main")?.focus()}}>Saltar al contenido</a>
-    <header className="mobile-header"><span>Medios Escolares</span><button className="icon-button" aria-label={menu?'Cerrar menú':'Abrir menú'} aria-expanded={menu} aria-controls="navigation" onClick={()=>setMenu(!menu)}>{menu?<X/>:<Menu/>}</button></header>
+    <header className="mobile-header"><Brand compact/><button className="icon-button" aria-label={menu?'Cerrar menú':'Abrir menú'} aria-expanded={menu} aria-controls="navigation" onClick={()=>setMenu(!menu)}>{menu?<X/>:<Menu/>}</button></header>
     <aside className={'sidebar '+(menu?'is-open':'')}>
-      <div className="brand">{logo && <img src="/images/logo-meb.png" alt="Medios Escolares Bonaerenses" onError={()=>setLogo(false)}/>}<div>Medios<br/><strong>Escolares</strong><span>BONAERENSES</span></div></div>
+      <Brand/>
       <div className="sidebar-rule"/>
       <p className="nav-label">ESTADÍSTICAS</p>
       <nav id="navigation" aria-label="Navegación principal">

@@ -1,8 +1,8 @@
 export const lines = [
-  { id: 'acompanamiento', source: 'Acompañamiento', name: 'Acompañamiento a Escuelas', description: 'Proyectos de comunicación que crecen en la escuela.', color: '#b91d65', icon: 'school' },
-  { id: 'ensenar', source: 'Enseñar con medios', name: 'Enseñar con medios', description: 'Los medios como parte de la experiencia de enseñar.', color: '#087d91', icon: 'book' },
-  { id: 'taller', source: 'Taller de radios', name: 'Taller de radios', description: 'Herramientas para aprender y producir en radio.', color: '#355376', icon: 'radio' },
-  { id: 'liga', source: 'Liga de radios escolares', name: 'Liga de radios escolares', description: 'Voces y experiencias de nuestras radios escolares.', color: '#7654a0', icon: 'mic' },
+  { id: 'acompanamiento', source: 'Acompañamiento', name: 'Acompañamiento a Escuelas', description: 'Proyectos de comunicación que crecen en la escuela.', color: 'var(--brand-magenta-ink)', icon: 'school' },
+  { id: 'ensenar', source: 'Enseñar con medios', name: 'Enseñar con medios', description: 'Los medios como parte de la experiencia de enseñar.', color: 'var(--brand-turquoise-ink)', icon: 'book' },
+  { id: 'taller', source: 'Taller de radios', name: 'Taller de radios', description: 'Herramientas para aprender y producir en radio.', color: 'var(--brand-blue)', icon: 'radio' },
+  { id: 'liga', source: 'Liga de radios escolares', name: 'Liga de radios escolares', description: 'Voces y experiencias de nuestras radios escolares.', color: 'var(--brand-violet)', icon: 'mic' },
 ] as const
 export type LineId = typeof lines[number]['id']
 export type Unit = 'Docentes' | 'Escuelas'
@@ -20,3 +20,4 @@ export function aggregate(cohorts: Cohort[]) {
   const sum = (key: keyof Metrics) => { const values = cohorts.map(c => c[key]); return values.length && values.every(v => v !== null) ? values.reduce<number>((a, v) => a + (v ?? 0), 0) : null }
   return { enrolled: sum('enrolled'), finished: sum('finished'), certified: sum('certified'), schools: sum('schools') }
 }
+
