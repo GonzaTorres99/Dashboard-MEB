@@ -1,0 +1,32 @@
+import { useState } from 'react'
+import { ArrowUpRight, BookOpen, Mic, Radio, School, ArrowLeft, MapPin } from 'lucide-react'
+import { lines, aggregate, formatNumber as num, formatRate, rate, type Dataset, type LineId, type Unit, type Cohort } from '../../shared/model'
+import { Stats } from '../components/Stats'
+const icons = { school: School, book: BookOpen, radio: Radio, mic: Mic }
+export function Dashboard({ data, lineId, year }: { data: Dataset; lineId: LineId | null; year: string }) {
+  const cohorts = data.cohorts.filter(c => (!lineId || c.line === lineId) && (!year || c.year === year)).sort((a,b) => Number(b.year)-Number(a.year) || Number(b.number)-Number(a.number))
+  const [selected, setSelected] = useState<string | null>(null)
+  const cohort = cohorts.find(c => c.id === selected)
+  if (cohort) return <Detail data={data} cohort={cohort} back={() => setSelected(null)} />
+  if (!cohorts.length) return <div className="empty"><h2>Sin cohortes para este período</h2><p>Probá seleccionar otro año.</p></div>
+  return <>
+    <Stats cohorts={cohorts} schools={lineId === 'acompanamiento' || lineId === 'liga'} />
+    {!lineId ? <><div className="section-heading"><div><p className="eyebrow">PROPUESTAS FORMATIVAS</p><h2>Cuatro líneas, muchas experiencias</h2></div><span className="muted">Explorá los resultados</span></div><div className="line-grid">{lines.map(line => {
+      const subset = cohorts.filter(c => c.line === line.id); const totals = aggregate(subset); const Icon = icons[line.icon]
+      return <a className="line-card" href={'#/' + line.id} key={line.id} style={{ borderTopColor: line.color }}><div className="line-card-top"><span className="line-icon" style={{ color: line.color }}><Icon size={25}/></span><span className="pill">{subset.length} cohortes</span></div><h3>{line.name}</h3><p>{line.description}</p><div className="line-numbers"><div><strong>{num(totals.enrolled)}</strong><span>Inscripciones</span></div><div><strong>{num(totals.finished)}</strong><span>Finalizaciones</span></div></div><div className="card-link">Consultar esta línea <ArrowUpRight size={18}/></div></a>
+    })}</div></> : <><div className="section-heading"><div><p className="eyebrow">RECORRIDO HISTÓRICO</p><h2>Cohortes publicadas</h2></div><span className="muted">Seleccioná una cohorte para ver el detalle</span></div><div className="table-wrap"><table><caption className="sr-only">Resultados por cohorte</caption><thead><tr><th>Cohorte / inicio</th><th>Inscriptos</th><th>Finalizaron</th><th>Certificados</th><th>Finalización</th><th>Datos regionales</th><th><span className="sr-only">Consultar</span></th></tr></thead><tbody>{cohorts.map(c => <tr key={c.id}><th scope="row"><button className="cohort-link" onClick={() => setSelected(c.id)}>{c.number}.ª cohorte</button><small>{c.date || 'Fecha pendiente'}</small></th><td>{num(c.enrolled)}</td><td>{num(c.finished)}</td><td>{num(c.certified)}</td><td>{formatRate(rate(c.enrolled,c.finished))}</td><td><span className={'pill ' + (c.regionalState === 'Pendiente' ? 'pending' : '')}>{c.regionalState || 'Pendiente'}</span></td><td><button aria-label={'Consultar cohorte ' + c.number} className="icon-button" onClick={() => setSelected(c.id)}><ArrowUpRight size={18}/></button></td></tr>)}</tbody></table></div></>}
+    <aside className="reading-note"><BookOpen size={22}/><div><strong>Una lectura compartida de nuestro recorrido</strong><p>Los resultados generales y los desgloses educativos conservan los valores de sus fuentes. Las diferencias históricas se mantienen; los certificados se informan de manera independiente.</p></div></aside>
+  </>
+}
+function Detail({ data, cohort: c, back }: { data: Dataset; cohort: Cohort; back: () => void }) {
+  const [unit,setUnit] = useState<Unit>('Docentes'); const [region,setRegion] = useState('')
+  const regional = data.regions.filter(r => r.cohortId === c.id)
+  const distribution = data.modalities.filter(m => m.cohortId === c.id && m.unit === unit && (region ? m.region === Number(region) : m.region === null))
+  return <>
+    <button onClick={back} className="text-button"><ArrowLeft size={16}/> Volver a las cohortes</button>
+    <div className="detail-title"><div><p className="eyebrow">{c.id} · {c.date || 'Fecha pendiente'}</p><h2>{c.name}</h2></div><span className="pill">Publicada</span></div>
+    <Stats cohorts={[c]} schools={c.line === 'acompanamiento' || c.line === 'liga'}/>
+    {c.line === 'acompanamiento' && <section className="panel"><div className="section-heading"><div><p className="eyebrow">DISTRIBUCIÓN EDUCATIVA</p><h2>Niveles y modalidades</h2></div><div className="segmented" aria-label="Unidad de análisis">{(['Docentes','Escuelas'] as const).map(u => <button key={u} aria-pressed={unit===u} onClick={() => setUnit(u)}>Por {u.toLowerCase()}</button>)}</div></div><p className="muted">{unit === 'Docentes' ? 'Cantidad de docentes por nivel o modalidad educativa.' : 'Escuelas representadas por docentes. Una escuela puede tener más de un docente.'}</p><label className="region-select">Región <select value={region} onChange={e=>setRegion(e.target.value)}><option value="">Todas · desglose general</option>{Array.from({length:25},(_,i)=>i+1).map(n=><option key={n} value={n}>Región {n}</option>)}</select></label>{distribution.length ? <div className="distribution">{distribution.map((m,i)=><div key={m.category+i}><span>{m.category}</span><strong>{num(m.count)}</strong></div>)}</div> : <div className="empty">Sin datos disponibles para esta selección.</div>}<p className="footnote">Fuente: {region ? 'MODALIDADES_REGION' : 'MODALIDADES'}. Se conservan las categorías y cantidades originales.</p></section>}
+    <section className="panel"><div className="section-heading"><div><p className="eyebrow">TERRITORIO</p><h2><MapPin size={21}/> Resultados por región</h2></div></div>{c.regionalState === 'Pendiente' && <p className="notice">Datos regionales pendientes. Los resultados generales de esta cohorte están disponibles.</p>}{regional.length ? <div className="table-wrap"><table><caption className="sr-only">Resultados de las regiones educativas</caption><thead><tr><th>Región</th><th>Inscriptos</th><th>Finalizaron</th><th>Escuelas</th><th>Estado</th></tr></thead><tbody>{regional.map(r=><tr key={r.region}><th scope="row">Región {r.region}</th><td>{num(r.enrolled)}</td><td>{num(r.finished)}</td><td>{num(r.schools)}</td><td>{r.state || 'Pendiente de carga'}</td></tr>)}</tbody></table></div> : <div className="empty">Datos regionales pendientes.</div>}</section>
+  </>
+}

@@ -1,0 +1,11 @@
+import { test } from 'node:test'
+import assert from 'node:assert/strict'
+import { adapt, numeric } from '../shared/adapter.ts'
+import { aggregate, rate, type RawSheets } from '../shared/model.ts'
+import { GET } from '../api/dashboard.ts'
+const raw = (): RawSheets => ({ COHORTES: [['ID'], ['A','Acompañamiento',1,'Primera','01/01/2026',2026,'Publicada','SI','Pendiente'],['B','Acompañamiento',2,'Segunda','',2026,'Borrador','SI'],['C','Acompañamiento',3,'Tercera','',2026,'Publicada','NO']], RESULTADOS: [['ID cohorte'],['A','','','','',100,80,79,20]], REGIONES: [['ID cohorte'],['A',1,0,0,0,'','','Pendiente']], MODALIDADES: [['ID cohorte'],['A','Docentes','Primaria',80],['A','Escuelas','Primaria',20],['B','Docentes','Primaria',999]], MODALIDADES_REGION: [['ID cohorte']] })
+test('publicación exige ambas condiciones y no filtra por número',()=>{const r=raw();r.COHORTES.push(['N','Acompañamiento',99,'Nueva','',2027,'Publicada','SI']);assert.deepEqual(adapt(r,'','live').cohorts.map(c=>c.id),['A','N'])})
+test('vacíos no son cero; cero es un dato válido',()=>{for(const v of ['',null,undefined,'#N/A',-1]) assert.equal(numeric(v),null);assert.equal(numeric(0),0);assert.equal(rate(0,12),null);assert.equal(rate(null,12),null);assert.equal(rate(100,80),80)})
+test('unidades, certificados y datos pendientes se conservan',()=>{const d=adapt(raw(),'','live');assert.equal(d.cohorts[0].certified,79);assert.equal(d.cohorts[0].finished,80);assert.deepEqual(d.modalities.map(m=>m.count),[80,20]);assert.equal(d.regions[0].enrolled,null)})
+test('totales incompletos no se presentan como completos',()=>{const d=adapt(raw(),'','live');assert.equal(aggregate(d.cohorts).enrolled,100);assert.equal(aggregate([...d.cohorts,{...d.cohorts[0],enrolled:null}]).enrolled,null);assert.equal(aggregate([]).schools,null)})
+test('API sin credenciales da error explícito sin secretos',async()=>{const keys=['GOOGLE_SHEETS_SPREADSHEET_ID','GOOGLE_SERVICE_ACCOUNT_EMAIL','GOOGLE_PRIVATE_KEY'];const previous=keys.map(k=>process.env[k]);try{keys.forEach(k=>delete process.env[k]);const response=await GET();assert.equal(response.status,503);assert.equal((await response.json()).code,'NOT_CONFIGURED')}finally{keys.forEach((k,i)=>{if(previous[i]===undefined)delete process.env[k];else process.env[k]=previous[i]})}})

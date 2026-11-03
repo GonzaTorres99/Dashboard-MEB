@@ -22,3 +22,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+.env
+.env.*
+!.env.example
+.vercel
+.snapshot-input.json
+*service-account*.json
+*.pem
+
+public/data/snapshot.json
