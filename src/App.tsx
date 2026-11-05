@@ -27,27 +27,41 @@ export default function App() {
   },[])
   useEffect(()=>{
     if (!menu) return
-    const close = (event: KeyboardEvent) => { if (event.key === 'Escape') { setMenu(false); document.getElementById('menu-toggle')?.focus() } }
-    window.addEventListener('keydown', close)
-    return () => window.removeEventListener('keydown', close)
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const focusable = () => Array.from(document.querySelectorAll<HTMLElement>('.mobile-header a, #menu-toggle, .sidebar a')).filter(el => el.getClientRects().length > 0)
+    document.querySelector<HTMLElement>('#navigation a[aria-current]')?.focus()
+    const keys = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { setMenu(false); document.getElementById('menu-toggle')?.focus() }
+      if (event.key !== 'Tab') return
+      const items = focusable(); const first = items[0]; const last = items.at(-1)
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus() }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus() }
+    }
+    const desktop = window.matchMedia('(min-width: 801px)')
+    const resize = () => { if (desktop.matches) setMenu(false) }
+    desktop.addEventListener('change', resize)
+    window.addEventListener('keydown', keys)
+    return () => { document.body.style.overflow = previousOverflow; desktop.removeEventListener('change', resize); window.removeEventListener('keydown', keys) }
   }, [menu])
+  const closeNavigation = () => { if (menu) { setMenu(false); requestAnimationFrame(() => document.getElementById('menu-toggle')?.focus()) } }
   const years = [...new Set(data?.cohorts.filter(c=>!line || c.line===line.id).map(c=>c.year).filter(Boolean))].sort().reverse()
   return <div className="app-shell">
     <a className="skip-link" href="#main" onClick={e=>{e.preventDefault();document.getElementById("main")?.focus()}}>Saltar al contenido</a>
-    <header className="mobile-header"><Brand compact/><button id="menu-toggle" className="icon-button" aria-label={menu?'Cerrar menú':'Abrir menú'} aria-expanded={menu} aria-controls="navigation" onClick={()=>setMenu(!menu)}>{menu?<X/>:<Menu/>}</button></header>
-    {menu && <button className="menu-backdrop" aria-label="Cerrar menú de navegación" onClick={()=>setMenu(false)}/>}
+    <header className="mobile-header"><Brand compact onNavigate={closeNavigation}/><button id="menu-toggle" className="icon-button" aria-label={menu?'Cerrar menú':'Abrir menú'} aria-expanded={menu} aria-controls="navigation" onClick={()=>setMenu(!menu)}>{menu?<X/>:<Menu/>}</button></header>
+    {menu && <button className="menu-backdrop" tabIndex={-1} aria-label="Cerrar menú de navegación" onClick={closeNavigation}/>}
     <aside className={'sidebar '+(menu?'is-open':'')}>
       <Brand/>
       <div className="sidebar-rule"/>
       <p className="nav-label">ESTADÍSTICAS</p>
       <nav id="navigation" aria-label="Navegación principal">
-        <a href="#/" onClick={()=>setMenu(false)} aria-current={!route?'page':undefined}><LayoutDashboard size={19}/>Resumen general</a>
+        <a href="#/" onClick={closeNavigation} aria-current={!route?'page':undefined}><span className="nav-icon"><LayoutDashboard size={20}/></span>Resumen general</a>
         <p className="nav-label">LÍNEAS DE TRABAJO</p>
-        {lines.map((l,i)=>{const Icon=icons[i];return <a key={l.id} href={'#/'+l.id} onClick={()=>setMenu(false)} aria-current={route===l.id?'page':undefined}><Icon size={19}/>{l.name}</a>})}
+        {lines.map((l,i)=>{const Icon=icons[i];return <a data-line={l.id} key={l.id} href={'#/'+l.id} onClick={closeNavigation} aria-current={route===l.id?'page':undefined}><span className="nav-icon"><Icon size={20}/></span>{l.name}</a>})}
       </nav>
       <div className="sidebar-bottom"><span className="province-label">Provincia de Buenos Aires</span><p>Dirección General de Cultura y Educación</p><p>Dirección de Tecnología Educativa</p></div>
     </aside>
-    <div className="workspace">
+    <div className="workspace" inert={menu}>
       <div className="topbar"><span>Medios Escolares <span className="separator">/</span> <strong>Resultados de formación</strong></span><a href="https://docs.google.com/spreadsheets/d/1AGn4zMEcx1gYJFXXXt0vuNm-uByVYGKgZ6pjpoN-EJo/edit" target="_blank" rel="noreferrer">Ver fuente <ExternalLink size={14}/></a></div>
       <main id="main" tabIndex={-1}>
         <div className={'page-heading heading-' + (line?.id ?? 'resumen')}><div><p className="eyebrow">EDUCACIÓN · COMUNICACIÓN · TERRITORIO</p><h1>{line?.name ?? 'Nuestro recorrido, en datos'}</h1><p>{line?.description ?? 'Conocé los resultados de las propuestas formativas de Medios Escolares Bonaerenses.'}</p></div><span className="edition">OBSERVATORIO<br/><strong>Medios Escolares</strong></span></div>
