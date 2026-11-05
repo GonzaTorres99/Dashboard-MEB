@@ -10,12 +10,19 @@
   --brand-turquoise-ink: #08788b;
   --brand-blush: #fceef5;
   --brand-mist: #e9f6f9;
+  /* Shared surfaces on desktop and mobile; white is reserved for data and controls. */
+  --surface-sidebar: #e5f1f6;
+  --surface-workspace: #f0f7fa;
+  --surface-heading: #fae8f1;
+  --surface-card: #ffffff;
+  --border-subtle: #cfdee7;
+  --border-heading: #eed3e0;
 }
 
 :root {
   font-family: Inter,ui-sans-serif,system-ui,sans-serif;
   color: #253c53;
-  background: #f7f9fc;
+  background: var(--surface-workspace);
   font-synthesis: none;
   font-weight: 400;
   font-size: 14px
@@ -202,6 +209,7 @@ nav a[aria-current] svg {
 }
 
 .workspace {
+  background: var(--surface-workspace);
   margin-left: 252px;
   min-width: 0;
   flex: 1
@@ -213,9 +221,9 @@ nav a[aria-current] svg {
   gap: 16px;
   align-items: center;
   padding: 22px 40px;
-  border-bottom: 1px solid #e3e9ef;
+  border-bottom: 1px solid var(--border-subtle);
   font-size: 12px;
-  background: #fff
+  background: var(--surface-workspace)
 }
 
 .topbar a {
@@ -367,7 +375,7 @@ select {
 }
 
 .stat {
-  background: #fff;
+  background: var(--surface-card);
   border: 1px solid #e1e7ef;
   box-shadow: 0 3px 8px #1b344003
 }
@@ -418,7 +426,7 @@ select {
   border: 1px solid #e1e7ef;
   border-top: 3px solid;
   border-radius: 10px;
-  background: white;
+  background: var(--surface-card);
   padding: 25px;
   transition: box-shadow .18s,transform .18s
 }
@@ -519,7 +527,7 @@ select {
   overflow-x: auto;
   border: 1px solid #e2e8ef;
   border-radius: 10px;
-  background: white
+  background: var(--surface-card)
 }
 
 table {
@@ -583,7 +591,7 @@ th small {
 
 .panel {
   padding: 25px;
-  background: white;
+  background: var(--surface-card);
   border: 1px solid #e2e8ef;
   border-radius: 10px;
   margin-top: 24px
@@ -651,7 +659,7 @@ th small {
   padding: 48px 24px;
   border: 1px dashed #cad6e1;
   border-radius: 10px;
-  background: #fff;
+  background: var(--surface-card);
   color: #66788b;
   line-height: 1.8;
   margin: 20px 0
@@ -801,8 +809,8 @@ main {
   position: sticky;
   top: 0;
   z-index: 30;
-  background: white;
-  border-bottom: 1px solid #e1e7ef;
+  background: var(--surface-sidebar);
+  border-bottom: 1px solid var(--border-subtle);
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
@@ -974,12 +982,12 @@ footer {
   --surface-blue: #edf2f8;
   --surface-violet: #f4edf7;
   --text-muted: #52657a;
-  --border-soft: #dce6ee;
+  --border-soft: var(--border-subtle);
 }
 
 .sidebar {
-  background: #fbfdff;
-  border-right-color: #dbe7ed;
+  background: var(--surface-sidebar);
+  border-right-color: var(--border-subtle);
 }
 
 .sidebar nav a {
@@ -1030,9 +1038,9 @@ footer {
   position: relative;
   overflow: hidden;
   padding: 25px 28px;
-  border: 1px solid #dbeaf0;
+  border: 1px solid var(--border-heading);
   border-radius: 14px;
-  background: var(--surface-cyan);
+  background: var(--surface-heading);
 }
 
 .page-heading::before {
@@ -1069,29 +1077,12 @@ footer {
   color: #52657a;
 }
 
-.heading-acompanamiento {
-  background: #fdf1f6;
-  border-color: #f5deea;
-}
-
-.heading-acompanamiento::before {
+.heading-resumen::before, .heading-acompanamiento::before {
   background: var(--brand-magenta);
-}
-
-.heading-ensenar {
-  background: var(--surface-cyan);
-}
-
-.heading-taller {
-  background: var(--surface-blue);
 }
 
 .heading-taller::before {
   background: var(--brand-blue);
-}
-
-.heading-liga {
-  background: var(--surface-violet);
 }
 
 .heading-liga::before {
@@ -1326,7 +1317,7 @@ to {
 }
 
 .cohort-card {
-  background: white;
+  background: var(--surface-card);
   border: 1px solid var(--border-soft);
   border-radius: 12px;
   padding: 18px;
