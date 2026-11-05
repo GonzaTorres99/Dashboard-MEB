@@ -25,25 +25,32 @@ export default function App() {
     window.addEventListener('hashchange',change)
     return ()=>window.removeEventListener('hashchange',change)
   },[])
+  useEffect(()=>{
+    if (!menu) return
+    const close = (event: KeyboardEvent) => { if (event.key === 'Escape') { setMenu(false); document.getElementById('menu-toggle')?.focus() } }
+    window.addEventListener('keydown', close)
+    return () => window.removeEventListener('keydown', close)
+  }, [menu])
   const years = [...new Set(data?.cohorts.filter(c=>!line || c.line===line.id).map(c=>c.year).filter(Boolean))].sort().reverse()
   return <div className="app-shell">
     <a className="skip-link" href="#main" onClick={e=>{e.preventDefault();document.getElementById("main")?.focus()}}>Saltar al contenido</a>
-    <header className="mobile-header"><Brand compact/><button className="icon-button" aria-label={menu?'Cerrar menú':'Abrir menú'} aria-expanded={menu} aria-controls="navigation" onClick={()=>setMenu(!menu)}>{menu?<X/>:<Menu/>}</button></header>
+    <header className="mobile-header"><Brand compact/><button id="menu-toggle" className="icon-button" aria-label={menu?'Cerrar menú':'Abrir menú'} aria-expanded={menu} aria-controls="navigation" onClick={()=>setMenu(!menu)}>{menu?<X/>:<Menu/>}</button></header>
+    {menu && <button className="menu-backdrop" aria-label="Cerrar menú de navegación" onClick={()=>setMenu(false)}/>}
     <aside className={'sidebar '+(menu?'is-open':'')}>
       <Brand/>
       <div className="sidebar-rule"/>
       <p className="nav-label">ESTADÍSTICAS</p>
       <nav id="navigation" aria-label="Navegación principal">
-        <a href="#/" aria-current={!route?'page':undefined}><LayoutDashboard size={19}/>Resumen general</a>
+        <a href="#/" onClick={()=>setMenu(false)} aria-current={!route?'page':undefined}><LayoutDashboard size={19}/>Resumen general</a>
         <p className="nav-label">LÍNEAS DE TRABAJO</p>
-        {lines.map((l,i)=>{const Icon=icons[i];return <a key={l.id} href={'#/'+l.id} aria-current={route===l.id?'page':undefined}><Icon size={19}/>{l.name}</a>})}
+        {lines.map((l,i)=>{const Icon=icons[i];return <a key={l.id} href={'#/'+l.id} onClick={()=>setMenu(false)} aria-current={route===l.id?'page':undefined}><Icon size={19}/>{l.name}</a>})}
       </nav>
       <div className="sidebar-bottom"><span className="province-label">Provincia de Buenos Aires</span><p>Dirección General de Cultura y Educación</p><p>Dirección de Tecnología Educativa</p></div>
     </aside>
     <div className="workspace">
       <div className="topbar"><span>Medios Escolares <span className="separator">/</span> <strong>Resultados de formación</strong></span><a href="https://docs.google.com/spreadsheets/d/1AGn4zMEcx1gYJFXXXt0vuNm-uByVYGKgZ6pjpoN-EJo/edit" target="_blank" rel="noreferrer">Ver fuente <ExternalLink size={14}/></a></div>
       <main id="main" tabIndex={-1}>
-        <div className="page-heading"><div><p className="eyebrow">EDUCACIÓN · COMUNICACIÓN · TERRITORIO</p><h1>{line?.name ?? 'Nuestro recorrido, en datos'}</h1><p>{line?.description ?? 'Conocé los resultados de las propuestas formativas de Medios Escolares Bonaerenses.'}</p></div><span className="edition">OBSERVATORIO<br/><strong>Medios Escolares</strong></span></div>
+        <div className={'page-heading heading-' + (line?.id ?? 'resumen')}><div><p className="eyebrow">EDUCACIÓN · COMUNICACIÓN · TERRITORIO</p><h1>{line?.name ?? 'Nuestro recorrido, en datos'}</h1><p>{line?.description ?? 'Conocé los resultados de las propuestas formativas de Medios Escolares Bonaerenses.'}</p></div><span className="edition">OBSERVATORIO<br/><strong>Medios Escolares</strong></span></div>
         <div className="toolbar"><div><h2>{line?'Resultados de la línea':'Resumen general'}</h2><span className="muted">Cohortes publicadas · {year || 'Todo el recorrido'}</span></div><div className="toolbar-actions"><label><CalendarDays size={16}/><span className="sr-only">Filtrar por año</span><select value={year} onChange={e=>setYear(e.target.value)}><option value="">Todos los años</option>{years.map(y=><option key={y}>{y}</option>)}</select></label><button disabled={loading} className="button" onClick={()=>void load()}><RefreshCw size={16} className={loading?'spinning':''}/>Actualizar</button></div></div>
         {error && <div className="error" role="alert"><AlertCircle size={22}/><div><strong>No se pudo sincronizar</strong><p>{error}</p><div className="error-actions"><button className="button" disabled={loading} onClick={()=>void load()}>Reintentar conexión</button><button className="text-button" disabled={loading} onClick={()=>void load(true)}>Ver copia de consulta</button></div></div></div>}
         {data && <div className={'source-status '+(data.source==='snapshot'?'snapshot':'')} role="status"><span className="status-dot"/><span>{data.source==='snapshot'?'Copia de consulta · sin conexión en vivo':'Última sincronización exitosa'}: {new Date(data.syncedAt).toLocaleString('es-AR',{timeZone:'America/Argentina/Buenos_Aires'})}{data.source==='snapshot'?' · Los cambios de la planilla no se actualizan en esta copia.':''}{error?' · Se conservan los últimos datos disponibles.':''}</span></div>}
@@ -55,4 +62,5 @@ export default function App() {
     </div>
   </div>
 }
+
 
