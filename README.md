@@ -77,3 +77,15 @@ La configuración y arquitectura siguen las referencias oficiales:
 Comparativas entre cohortes y regiones, evolución temporal, exportación de tablas y enlaces directos a cada cohorte. Revisar indicadores parciales con el equipo antes de introducir totales adicionales.
 
 
+
+## Visualizaciones — fase 1
+
+Recharts se carga bajo demanda. El resumen compara las tasas por línea después de las cuatro tarjetas; cada línea muestra la evolución antes de las cohortes. Ambos gráficos usan el filtro anual existente y la tasa de sumas de `shared/model.ts`.
+
+`src/utils/chartData.ts` conserva valores faltantes, ordena cohortes numéricamente y separa valores originales de valores graficables. Las tasas anómalas se explican sin recortarlas a 100 %. Los huecos no se conectan. Con menos de tres resultados válidos se muestran barras individuales. La publicación continúa filtrándose exclusivamente en el adaptador existente.
+
+Los paneles tienen gráficos de 240 px (comparación móvil: 260 px), colores institucionales y animación desactivada. Incluyen navegación por teclado, tooltip por toque en dispositivos de puntero táctil y valores alternativos: listado desplegable en el resumen y tablas/tarjetas existentes en cada línea.
+
+Validación: `npm run check` ejecuta lint, 15 pruebas, TypeScript y build. Revisión en navegador de las cinco vistas a 390, 768, 1024 y 1440 px, filtros y tooltips por teclado. La interacción táctil física queda pendiente de probar en un teléfono real. No se modifica Google Sheets, la API ni la copia local.
+
+Referencias: [Tooltip de Recharts](https://recharts.github.io/en-US/api/Tooltip/) y [accesibilidad de Recharts](https://github.com/recharts/recharts/wiki/Recharts-and-accessibility).

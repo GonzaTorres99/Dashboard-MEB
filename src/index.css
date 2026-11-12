@@ -1575,3 +1575,27 @@ td, .distribution strong {
   scroll-behavior: auto!important
 }
 }
+
+/* Compact statistical visualizations, secondary to indicators and tables. */
+.chart-panel { min-width: 0; }
+.chart-panel h2 { font-size: 18px; }
+.chart-description { margin-top: 6px; }
+.chart-frame { height: 240px; width: 100%; min-width: 0; margin-top: 18px; }
+.chart-frame .recharts-cartesian-axis-tick text { fill: var(--text-muted); font-size: 12px; }
+.chart-frame .recharts-label-list text { font-size: 12px; }
+.chart-frame .recharts-surface:focus-visible { outline: 2px solid var(--brand-turquoise-ink); outline-offset: 2px; }
+.chart-tooltip { background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 10px 12px; font-size: 13px; max-width: 235px; white-space: normal; }
+.chart-tooltip strong { color: var(--brand-blue); }
+.chart-empty { padding: 24px 0; color: var(--text-muted); }
+.chart-data { margin-top: 12px; font-size: 13px; }
+.chart-data summary { cursor: pointer; color: var(--brand-blue); padding: 8px 0; }
+.chart-data summary:focus-visible { outline: 2px solid var(--brand-turquoise-ink); }
+.chart-data dl > div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid var(--border-subtle); }
+.chart-data dd { margin: 0; text-align: right; }
+@media(max-width:600px) {
+  .chart-panel { padding: 18px 12px; }
+  .comparison-chart { height: 260px; }
+  .chart-data dl > div { flex-direction: column; gap: 4px; }
+  .chart-data dd { text-align: left; }
+}
+.chart-loading { min-height: 340px; }
