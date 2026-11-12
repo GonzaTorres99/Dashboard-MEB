@@ -1599,3 +1599,17 @@ td, .distribution strong {
   .chart-data dd { text-align: left; }
 }
 .chart-loading { min-height: 340px; }
+
+/* Educational distribution stays inside the existing detail panel. */
+.modality-chart-toggle { margin-bottom: 10px; }
+.modality-chart { min-width: 0; padding: 16px 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); margin-bottom: 16px; }
+.modality-chart h3 { font-size: 17px; margin-bottom: 6px; }
+.modality-chart-scroll { max-height: 350px; overflow-y: auto; overflow-x: hidden; margin-top: 12px; }
+.modality-chart-scroll .chart-frame { margin-top: 0; }
+.modality-chart-scroll:focus-visible { outline: 2px solid var(--brand-turquoise-ink); outline-offset: 3px; }
+.modality-chart .chart-tooltip { max-width: 220px; overflow-wrap: anywhere; }
+@media(max-width:600px) {
+  .modality-chart .chart-tooltip { max-width: 180px; }
+}
+.modality-tooltip-host { position: relative; z-index: 2; }
+.modality-tooltip-host .recharts-tooltip-wrapper { position: absolute; top: 0; left: 0; }

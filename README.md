@@ -89,3 +89,13 @@ Los paneles tienen gráficos de 240 px (comparación móvil: 260 px), colores in
 Validación: `npm run check` ejecuta lint, 15 pruebas, TypeScript y build. Revisión en navegador de las cinco vistas a 390, 768, 1024 y 1440 px, filtros y tooltips por teclado. La interacción táctil física queda pendiente de probar en un teléfono real. No se modifica Google Sheets, la API ni la copia local.
 
 Referencias: [Tooltip de Recharts](https://recharts.github.io/en-US/api/Tooltip/) y [accesibilidad de Recharts](https://github.com/recharts/recharts/wiki/Recharts-and-accessibility).
+
+## Visualizaciones — fase 2
+
+El detalle de Acompañamiento incorpora `Ver gráfico / Ocultar gráfico` dentro del panel de modalidades. Está contraído al entrar y comparte los selectores de unidad y región existentes. El listado conserva sus valores, nombres y orden.
+
+`src/utils/modalityChartData.ts` selecciona la cohorte, unidad y región exactas. Los registros generales no se suman desde regiones ni sustituyen desgloses regionales pendientes. Conserva ceros, excluye nulos de las barras y señala cobertura posiblemente incompleta (nulos o categorías ausentes respecto del desglose general). Ordena una copia por cantidad y luego por nombre. No se encontraron categorías duplicadas en la copia actual; si aparecen, se avisa y se mantienen únicamente en el listado, sin asumir que deban sumarse.
+
+El gráfico utiliza magenta, cantidades absolutas y etiquetas multilínea. Muestra cinco categorías inicialmente, con opción de ver todas en un área con scroll vertical limitada a 350 px. Los tooltips se muestran fuera del contenedor desplazable para evitar recortes. Se reutiliza el comportamiento táctil y de teclado de la fase 1, con animaciones desactivadas y carga diferida.
+
+Validación: lint, 22 pruebas, TypeScript y build. Revisión a 390, 768, 1024 y 1440 px; cohortes 6 y 11, cambios de unidad y región, estados pendientes, mostrar/ocultar y expansión. La interacción táctil física sigue pendiente de validación en un dispositivo real. No se agregan dependencias ni se cambian la API, el adaptador, la planilla o los datos locales.
